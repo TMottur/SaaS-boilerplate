@@ -2,7 +2,7 @@
 
 This is a backend starter project built with [Axum](https://docs.rs/axum), designed as a boilerplate for SaaS-style applications. It includes user account management, project tracking, and structured error handling.
 
-## ✨ Features
+## Features
 
 - **User Accounts**: Register users with email + hashed password
 - **Projects API**: Full CRUD for user-owned project records
@@ -11,7 +11,7 @@ This is a backend starter project built with [Axum](https://docs.rs/axum), desig
 - **Extensible Error Handling**: Custom error enum for API and DB errors
 - **Environment-Safe**: `.env` support via `dotenvy` and `.gitignore`d for GitHub safety
 
-## 🏗 Current Stack
+## Current Stack
 
 - **Rust**
 - **Axum** (web framework)
@@ -19,7 +19,7 @@ This is a backend starter project built with [Axum](https://docs.rs/axum), desig
 - **dotenvy** (for config)
 - **tokio** (async runtime)
 
-## 🚀 Getting Started
+## Getting Started
 
 1. Set up your local Postgres database
 2. Run migrations from `/migrations`
@@ -32,7 +32,7 @@ This is a backend starter project built with [Axum](https://docs.rs/axum), desig
    cargo run
    ```
 
-## 📁 Folder Structure
+## Folder Structure
 
 ```bash
 src/

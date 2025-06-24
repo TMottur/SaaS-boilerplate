@@ -130,7 +130,7 @@ impl Store {
     pub async fn list_projects(&self) -> Result<Vec<Project>, StoreError> {
         let projects = sqlx::query_as!(
             Project,
-            "SELECT id, user_email, name, description, created_at FROM projects"
+            "SELECT id, user_email, name, description, created_at, last_updated FROM projects"
         )
         .fetch_all(&self.connection)
         .await?;
@@ -144,7 +144,7 @@ impl Store {
         let project = sqlx::query_as!(
             Project,
             r#"
-            SELECT id, user_email, name, description, created_at
+            SELECT id, user_email, name, description, created_at, last_updated
             FROM projects
             WHERE id = $1
             "#,
@@ -210,6 +210,7 @@ pub enum StoreError {
 
     #[error("Failed to create project")]
     FailedProjectCreation,
+
 }
 
 #[derive(Serialize)]
