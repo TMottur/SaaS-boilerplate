@@ -211,6 +211,8 @@ pub enum StoreError {
     #[error("Failed to create project")]
     FailedProjectCreation,
 
+    #[error("Session error")]
+    SessionError,
 }
 
 #[derive(Serialize)]
@@ -223,7 +225,7 @@ impl IntoResponse for StoreError {
         let status = match self {
             StoreError::UserNotFound | StoreError::IncorrectPassword => StatusCode::UNAUTHORIZED,
             StoreError::UserDataNotFound(_) | StoreError::ProjectNotFound | StoreError::MalformedStoreHash | StoreError::FailedProjectCreation => StatusCode::BAD_REQUEST,
-            StoreError::HashError(_) | StoreError::SqlxError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            StoreError::HashError(_) | StoreError::SessionError | StoreError::SqlxError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
 
         let body = Json(ErrorResponse {

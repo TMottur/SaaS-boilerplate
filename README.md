@@ -1,59 +1,48 @@
-# SaaS Boilerplate (Rust + Axum)
 
-This is a backend starter project built with [Axum](https://docs.rs/axum), designed as a boilerplate for SaaS-style applications. It includes user account management, project tracking, and structured error handling.
+# SaaS Boilerplate API - Axum, Rust, Postgres
 
-## Features
-
-- **User Accounts**: Register users with email + hashed password
-- **Projects API**: Full CRUD for user-owned project records
-- **PostgreSQL + SQLx**: Async database access with typed queries
-- **Modular Code Structure**: Split across `main.rs` and `store.rs`
-- **Extensible Error Handling**: Custom error enum for API and DB errors
-- **Environment-Safe**: `.env` support via `dotenvy` and `.gitignore`d for GitHub safety
-
-## Current Stack
-
-- **Rust**
-- **Axum** (web framework)
-- **SQLx** (Postgres driver)
-- **dotenvy** (for config)
-- **tokio** (async runtime)
-
-## Getting Started
-
-1. Set up your local Postgres database
-2. Run migrations from `/migrations`
-3. Create a `.env` file:
-   ```env
-   DATABASE_URL=postgres://<user>:<password>@localhost:5432/<your_db>
-   ```
-4. Build and run:
-   ```bash
-   cargo run
-   ```
-
-## Folder Structure
-
-```bash
-src/
-├── main.rs        # Axum router and app setup
-├── store.rs       # Database layer
-migrations/
-├── create_accounts.sql
-├── create_project_table.sql
-.env.example        # Example config (safe to commit)
-.gitignore          # Ignores .env and other local files
-```
-
-## 🛠 Todo
-
-- ✅ Basic account and project management
-- 🔒 Add authentication middleware
-- 🌐 Add frontend (Yew or Leptos?)
-- 📦 Dockerize for deployment
+This project is a scalable SaaS boilerplate backend built with **Rust** and **Axum**, designed as a secure, minimal foundation for web applications. It provides user authentication, session management, and full CRUD operations for project resources, backed by a Postgres database.
 
 ---
 
-## 🧠 Notes
+## Features
 
-This is a portfolio project used for Rust backend practice and experimentation. It is not production-ready but structured cleanly for future expansion and deployment.
+**Axum Framework** — Fast, ergonomic Rust web server  
+**PostgreSQL Integration** — Data persistence via SQLx with Postgres  
+**Secure Password Hashing** — User credentials protected with `argon2`  
+**Session Management** — Cookie-based sessions using `tower-sessions`  
+**User Authentication** — Account creation and login routes implemented  
+**Project Resource CRUD** — Create, Read, Update, and Delete projects  
+**UUID Project IDs** — Unique project identifiers with `pgcrypto` extension  
+**Timestamps** — Tracks creation and modification times for projects  
+**Rust Error Handling** — Idiomatic, custom error types with `thiserror`  
+**Environment Config** — Uses `dotenvy` for environment variable management  
+
+---
+
+## 🛠️ Tech Stack
+
+- **Rust**  
+- **Axum**  
+- **SQLx (Postgres driver)**  
+- **tower-sessions**  
+- **Argon2 password hashing**  
+- **Tokio async runtime**  
+- **Postgres Database**  
+- **dotenvy**  
+
+---
+
+## 📚 Current API Endpoints (Highlights)
+
+| Method | Endpoint         | Description                           |
+|--------|-----------------|---------------------------------------|
+| `POST` | `/signup`       | Register new user account             |
+| `POST` | `/login`        | Authenticate and create session       |
+| `POST` | `/logout`       | Invalidate user session (logout)      |
+| `POST` | `/projects`     | Create new project (auth required)    |
+| `GET`  | `/projects`     | List all projects for user (auth)     |
+| `PUT`  | `/projects/:id` | Update existing project (auth)        |
+| `DELETE` | `/projects/:id` | Delete project by ID (auth)        |
+
+

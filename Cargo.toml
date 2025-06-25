@@ -8,12 +8,14 @@ axum = "0.8.4"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 tokio = {version = "1.45.1", features = ["full"]}
-sqlx = { version = "0.7", features = [ "runtime-tokio-rustls", "migrate", "uuid", "postgres", "macros", "chrono" ] }
+sqlx = { version = "0.7", features = [ "runtime-tokio-rustls", "migrate", "offline", "uuid", "postgres", "macros", "chrono" ] }
 rand = "0.9.1"
 argon2 = "0.5.3"
 thiserror = "2.0.12"
 chrono = { version = "0.4.41", features = ["serde"] }
 uuid = { version= "1.17.0", features = ["v4", "serde"] }
 dotenvy = "0.15.7"
+tower-sessions = "0.14.0"
+http = "1.3.1"
 
 
