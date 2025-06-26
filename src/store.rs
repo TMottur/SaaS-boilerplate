@@ -1,6 +1,4 @@
-use sqlx::{
-    postgres::{PgPool, PgPoolOptions}
-};
+use sqlx::postgres::{PgPool, PgPoolOptions};
 use serde::{Serialize, Deserialize};
 use argon2::{
     password_hash::{
@@ -17,6 +15,7 @@ use axum::{
     Json,
 };
 use uuid::Uuid;
+use validator::Validate;
 
 #[derive(Debug, Clone)]
 pub struct Store {
@@ -29,21 +28,26 @@ pub struct Account {
     pub password: String,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Validate)]
 pub struct Project {
     pub id: Option<uuid::Uuid>,
+
+    #[validate(email)]
     pub user_email: String,
+
+    #[validate(length(min = 1, message = "Project must have a name"))]
     pub name: String,
+
     pub description: Option<String>,
-    pub created_at: Option<chrono::NaiveDateTime>,
-    pub last_updated: Option<chrono::NaiveDateTime>,
+    pub created_at: Option<sqlx::types::time::PrimitiveDateTime>,
+    pub last_updated: Option<sqlx::types::time::PrimitiveDateTime>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct UpdateProject {
     pub name: Option<String>,
     pub description: Option<String>,
-    pub update_timestamp: chrono::NaiveDateTime
+    pub update_timestamp: sqlx::types::time::PrimitiveDateTime,
 }
 
 impl Store {
@@ -61,9 +65,9 @@ impl Store {
         }
     }
 
-    pub async fn authenticate_user(&self, username: &str, password: &str) -> Result<bool, StoreError> {
-        let row = sqlx::query("SELECT password FROM accounts WHERE username = $1")
-            .bind(username)
+    pub async fn authenticate_user(&self, email: &str, password: &str) -> Result<bool, StoreError> {
+        let row = sqlx::query("SELECT password FROM accounts WHERE email = $1")
+            .bind(email)
             .fetch_one(&self.connection)
             .await
             .map_err(|e| match e {
@@ -90,14 +94,14 @@ impl Store {
             }
     }
 
-    pub async fn register_user (&self, username: &str, password: &str) -> Result<(), StoreError> {
+    pub async fn register_user (&self, email: &str, password: &str) -> Result<(), StoreError> {
         let password = password.as_bytes();
         let hashed_password = Self::hash_password(password)
             .map_err(|e| StoreError::HashError(e.to_string()))?;
         sqlx::query(
-            "INSERT INTO accounts (username, password) VALUES ($1, $2)",
+            "INSERT INTO accounts (email, password) VALUES ($1, $2)",
         )
-        .bind(username)
+        .bind(email)
         .bind(&hashed_password)
         .execute(&self.connection)
         .await?;
@@ -112,6 +116,10 @@ impl Store {
     }
 
     pub async fn create_project(&self, project: Project) -> Result<(), StoreError> {
+        // Validate project has a name and valid associated email
+        if let Err(e) = project.validate() {
+            return Err(StoreError::InvalidInput(format!("{}", e)));
+        }
         let id = Uuid::new_v4();
         sqlx::query(
             "INSERT INTO projects (id, user_email, name, description)
@@ -213,6 +221,9 @@ pub enum StoreError {
 
     #[error("Session error")]
     SessionError,
+
+    #[error("Invalid user input: {0}")]
+    InvalidInput(String),
 }
 
 #[derive(Serialize)]
@@ -223,9 +234,16 @@ struct ErrorResponse {
 impl IntoResponse for StoreError {
     fn into_response(self) -> Response {
         let status = match self {
-            StoreError::UserNotFound | StoreError::IncorrectPassword => StatusCode::UNAUTHORIZED,
-            StoreError::UserDataNotFound(_) | StoreError::ProjectNotFound | StoreError::MalformedStoreHash | StoreError::FailedProjectCreation => StatusCode::BAD_REQUEST,
-            StoreError::HashError(_) | StoreError::SessionError | StoreError::SqlxError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            StoreError::UserNotFound 
+            | StoreError::IncorrectPassword => StatusCode::UNAUTHORIZED,
+            StoreError::UserDataNotFound(_) 
+            | StoreError::ProjectNotFound 
+            | StoreError::MalformedStoreHash 
+            | StoreError::FailedProjectCreation
+            | StoreError::InvalidInput(_) => StatusCode::BAD_REQUEST,
+            StoreError::HashError(_) 
+            | StoreError::SessionError 
+            | StoreError::SqlxError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
 
         let body = Json(ErrorResponse {
