@@ -235,14 +235,14 @@ impl IntoResponse for StoreError {
     fn into_response(self) -> Response {
         let status = match self {
             StoreError::UserNotFound 
-            | StoreError::IncorrectPassword => StatusCode::UNAUTHORIZED,
+            | StoreError::IncorrectPassword
+            | StoreError::SessionError  => StatusCode::UNAUTHORIZED,
             StoreError::UserDataNotFound(_) 
             | StoreError::ProjectNotFound 
             | StoreError::MalformedStoreHash 
             | StoreError::FailedProjectCreation
             | StoreError::InvalidInput(_) => StatusCode::BAD_REQUEST,
             StoreError::HashError(_) 
-            | StoreError::SessionError 
             | StoreError::SqlxError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         };
 

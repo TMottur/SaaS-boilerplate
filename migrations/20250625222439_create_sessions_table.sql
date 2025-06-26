@@ -1,6 +1,8 @@
 -- Add migration script here
-CREATE TABLE IF NOT EXISTS sessions (
+CREATE SCHEMA IF NOT EXISTS tower_sessions;
+
+CREATE TABLE IF NOT EXISTS tower_sessions.session (
     id TEXT PRIMARY KEY,
-    session BYTEA NOT NULL,
-    expires TIMESTAMPTZ NOT NULL
+    data BYTEA NOT NULL,
+    expiry_date TIMESTAMPTZ NOT NULL
 );

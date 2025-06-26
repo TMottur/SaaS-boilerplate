@@ -41,9 +41,9 @@ async fn main() {
         .route("/signup", post(add_user))
         .route("/projects", post(create_project_handler))
         .route("/projects", get(list_project_handler))
-        .route("/projects/:id", get(get_project_by_id_handler))
-        .route("/projects/:id", put(update_project_handler))
-        .route("/projects/:id", delete(delete_project_handler))
+        .route("/projects/{id}", get(get_project_by_id_handler))
+        .route("/projects/{id}", put(update_project_handler))
+        .route("/projects/{id}", delete(delete_project_handler))
         .route("/healthz", get(health_check))
         .with_state(shared_store)
         .layer(session_layer);
