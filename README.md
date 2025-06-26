@@ -39,14 +39,14 @@ A lightweight, production-ready Rust API built with [Axum](https://docs.rs/axum/
 
 ## Quick Start (Docker)
 
-\`\`\`bash
+```bash
 # Clone the repo
 git clone https://github.com/yourname/axum-web.git
 cd axum-web
 
 # Build and run with Docker Compose
 docker-compose up --build
-\`\`\`
+```
 
 The API will be available at [http://localhost:3000](http://localhost:3000).
 
@@ -104,8 +104,8 @@ Planned additions:
 
 For non-Docker setups:
 
-\`\`\`bash
+```bash
 # Ensure Postgres is running on port 5433 as defined in docker-compose.yml
 export DATABASE_URL=postgres://postgres:postgres@localhost:5433/axum_db
 cargo run
-\`\`\`
+```
