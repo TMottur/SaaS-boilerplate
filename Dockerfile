@@ -10,6 +10,7 @@ RUN cargo build --release && rm -r src
 
 # Actual source code
 COPY . .
+ENV SQLX_OFFLINE=true
 RUN cargo build --release
 
 # Runtime stage
@@ -20,9 +21,6 @@ RUN apt-get update && apt-get install -y libpq5 && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 COPY --from=builder /usr/src/app/target/release/axum-web /app/axum-web
-
-# Copy .env file if needed
-COPY .env .env
 
 EXPOSE 3000
 CMD ["./axum-web"]
